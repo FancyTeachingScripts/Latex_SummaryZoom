@@ -56,11 +56,110 @@
     \stepcounter{frametotal}%
     \expandafter\newsavebox\expandafter{%
     \csname saveframebox\romannumeral\theframetotal\endcsname}%
+    % Save original overlay commands and disable them for clean thumbnails
+    \let\oldonslide\onslide%
+    \let\oldpause\pause%
+    \let\oldonly\only%
+    \let\olduncover\uncover%
+    \let\oldinvisible\invisible%
+    \let\oldvisible\visible%
+    \let\oldtemporal\temporal%
+    \let\olditem\item%
+    % Redefine overlay commands to show final state only using safe non-recursive approach
+    \def\pause{}% Complete ignore
+    \def\onslide{\@ifnextchar<{\sframe@onslide@angle}{\sframe@onslide@noangle}}%
+    \def\sframe@onslide@angle<##1>##2{##2}% Show content, ignore overlay spec
+    \def\sframe@onslide@noangle##1{}% Ignore non-angle form
+    \def\only{\@ifnextchar<{\sframe@only@angle}{\sframe@only@noangle}}%
+    \def\sframe@only@angle<##1>##2{##2}% Show content, ignore overlay spec  
+    \def\sframe@only@noangle##1{}% Ignore non-angle form
+    \def\uncover{\@ifnextchar<{\sframe@uncover@angle}{\sframe@uncover@noangle}}%
+    \def\sframe@uncover@angle<##1>##2{##2}% Show content, ignore overlay spec
+    \def\sframe@uncover@noangle##1{}% Ignore non-angle form
+    \def\visible{\@ifnextchar<{\sframe@visible@angle}{\sframe@visible@noangle}}%
+    \def\sframe@visible@angle<##1>##2{##2}% Show content, ignore overlay spec
+    \def\sframe@visible@noangle##1{}% Ignore non-angle form
+    \def\invisible{\@ifnextchar<{\sframe@invisible@angle}{\sframe@invisible@noangle}}%
+    \def\sframe@invisible@angle<##1>##2{}% Hide content completely
+    \def\sframe@invisible@noangle##1{}% Ignore non-angle form
+    \def\temporal{\@ifnextchar<{\sframe@temporal@angle}{\sframe@temporal@noangle}}%
+    \def\sframe@temporal@angle<##1>##2##3##4{##4}% Show 'after' content
+    \def\sframe@temporal@noangle##1##2##3{##3}% Show last argument if no angle
+    % Handle itemize overlays by redefining item to ignore overlay specs
+    \def\item{\@ifnextchar<{\sframe@item@ignoreoverlay}{\olditem}}%
+    \def\sframe@item@ignoreoverlay##1{\olditem}% Ignore <spec> and use normal item
     \setbox0=\vbox\bgroup\begin{frame}{#1}
 }
 {
     \end{frame}\leavevmode\unskip\setbox0=\lastbox\egroup%
+    % Restore original overlay commands
+    \let\onslide\oldonslide%
+    \let\pause\oldpause%
+    \let\only\oldonly%
+    \let\uncover\olduncover%
+    \let\invisible\oldinvisible%
+    \let\visible\oldvisible%
+    \let\temporal\oldtemporal%
+    \let\item\olditem%
     \global\sbox{\csname saveframebox\romannumeral\theframetotal\endcsname}{\box0}%
+}
+
+% Command to define a reusable frame with animations
+% Usage: \definesframe{title}{frame content with animations}
+\newcommand{\definesframe}[2]{%
+    \stepcounter{frametotal}%
+    % Store the frame title
+    \expandafter\gdef\csname sframetitle\romannumeral\theframetotal\endcsname{#1}%
+    % Store the frame content
+    \expandafter\long\expandafter\gdef\csname sframecontent\romannumeral\theframetotal\endcsname{#2}%
+    % Create the savebox version (without animations for thumbnails)
+    \expandafter\newsavebox\expandafter{%
+        \csname saveframebox\romannumeral\theframetotal\endcsname}%
+    % Create static version for thumbnails with proper overlay neutralization
+    % Save original overlay commands
+    \let\oldonslide\onslide%
+    \let\oldpause\pause%
+    \let\oldonly\only%
+    \let\olduncover\uncover%
+    \let\oldinvisible\invisible%
+    \let\oldvisible\visible%
+    \let\oldtemporal\temporal%
+    \let\olditem\item%
+    % Safely redefine overlay commands to avoid recursion
+    \def\pause{}% Complete ignore
+    \def\onslide{\@ifnextchar<{\definesframe@onslide@angle}{\definesframe@onslide@noangle}}%
+    \def\definesframe@onslide@angle<##1>##2{##2}% Show content, ignore overlay spec
+    \def\definesframe@onslide@noangle##1{}% Ignore non-angle form
+    \def\only{\@ifnextchar<{\definesframe@only@angle}{\definesframe@only@noangle}}%
+    \def\definesframe@only@angle<##1>##2{##2}% Show content, ignore overlay spec  
+    \def\definesframe@only@noangle##1{}% Ignore non-angle form
+    \def\uncover{\@ifnextchar<{\definesframe@uncover@angle}{\definesframe@uncover@noangle}}%
+    \def\definesframe@uncover@angle<##1>##2{##2}% Show content, ignore overlay spec
+    \def\definesframe@uncover@noangle##1{}% Ignore non-angle form
+    \def\visible{\@ifnextchar<{\definesframe@visible@angle}{\definesframe@visible@noangle}}%
+    \def\definesframe@visible@angle<##1>##2{##2}% Show content, ignore overlay spec
+    \def\definesframe@visible@noangle##1{}% Ignore non-angle form
+    \def\invisible{\@ifnextchar<{\definesframe@invisible@angle}{\definesframe@invisible@noangle}}%
+    \def\definesframe@invisible@angle<##1>##2{}% Hide content completely
+    \def\definesframe@invisible@noangle##1{}% Ignore non-angle form
+    \def\temporal{\@ifnextchar<{\definesframe@temporal@angle}{\definesframe@temporal@noangle}}%
+    \def\definesframe@temporal@angle<##1>##2##3##4{##4}% Show 'after' content
+    \def\definesframe@temporal@noangle##1##2##3{##3}% Show last argument if no angle
+    % Handle itemize overlays by redefining item to ignore overlay specs
+    \def\item{\@ifnextchar<{\definesframe@item@ignoreoverlay}{\olditem}}%
+    \def\definesframe@item@ignoreoverlay##1{\olditem}% Ignore <spec> and use normal item
+    % Create the frame using the same approach as sframe environment
+    \setbox0=\vbox\bgroup\begin{frame}{#1}#2\end{frame}\leavevmode\unskip\setbox0=\lastbox\egroup%
+    \global\sbox{\csname saveframebox\romannumeral\theframetotal\endcsname}{\box0}%
+    % Restore original overlay commands
+    \let\onslide\oldonslide%
+    \let\pause\oldpause%
+    \let\only\oldonly%
+    \let\uncover\olduncover%
+    \let\invisible\oldinvisible%
+    \let\visible\oldvisible%
+    \let\temporal\oldtemporal%
+    \let\item\olditem%
 }
 
 % WHILE USED FOR PREVIEW MODE, \savedframe[scale]{frame #} CAN ALSO BE USED
@@ -95,6 +194,7 @@
             {\usebox{\csname saveframebox\romannumeral\theframeindex\endcsname}}%
         \end{frame}
     }%
+    \stepcounter{frameindex}%
     \begin{frame}
          \label{sframe:\romannumeral\theframeindex}
         \usebox{\csname saveframebox\romannumeral\theframetotal\endcsname}%
@@ -104,29 +204,47 @@
 \newcommand\reciteframe[1][\numexpr\theframeindex+1\relax]{%
     \setcounter{frameindex}{#1}%
     \ifnum\value{frameindex}<\numexpr\value{frametotal}\relax{%
-        \begin{frame}
-         \label{sframe:\romannumeral\theframeindex}
-            \previewinset{
-                \insetHalignment}{
-                \insetHoffset}{
-                \insetValignment}{
-                \insetVoffset
-            }{
-                \savedframe[\defaultpreviewscale]{
-                    \numexpr\value{frameindex}+1\relax
-                }{\saveframeHoffset}
-            }{
-                \usebox{\csname saveframebox\romannumeral\theframeindex\endcsname}
-            }%
-        \end{frame}
+        % Check if frame has stored content (for animations)
+        \ifcsname sframecontent\romannumeral\theframeindex\endcsname%
+            % Use stored content with live animations
+            % Set the label on the first slide of the animation sequence
+            \begin{frame}<1->{\csname sframetitle\romannumeral\theframeindex\endcsname}
+                \label<1>{sframe:\romannumeral\theframeindex}
+                \csname sframecontent\romannumeral\theframeindex\endcsname%
+            \end{frame}
+        \else%
+            % Use traditional method with preview inset
+            \begin{frame}
+             \label{sframe:\romannumeral\theframeindex}
+                \previewinset{
+                    \insetHalignment}{
+                    \insetHoffset}{
+                    \insetValignment}{
+                    \insetVoffset
+                }{
+                    \savedframe[\defaultpreviewscale]{
+                        \numexpr\value{frameindex}+1\relax
+                    }{\saveframeHoffset}
+                }{
+                    \usebox{\csname saveframebox\romannumeral\theframeindex\endcsname}
+                }%
+            \end{frame}
+        \fi%
     }
     \else%
-        \begin{frame}
-            \usebox{\csname saveframebox\romannumeral\theframetotal\endcsname}%
-        \end{frame}
-    \fi
-    
-    
+        % Last frame - check if it has stored content  
+        \ifcsname sframecontent\romannumeral\theframetotal\endcsname%
+            \begin{frame}<1->{\csname sframetitle\romannumeral\theframetotal\endcsname}
+                \label<1>{sframe:\romannumeral\theframetotal}
+                \csname sframecontent\romannumeral\theframetotal\endcsname%
+            \end{frame}
+        \else%
+            \begin{frame}
+                \label{sframe:\romannumeral\theframetotal}
+                \usebox{\csname saveframebox\romannumeral\theframetotal\endcsname}%
+            \end{frame}
+        \fi%
+    \fi%
 }
 
 
@@ -223,9 +341,11 @@
 
 % recite all sframes since the last summary zoom
 \newcommand{\recitesection}{
-    \foreach \i in {\the\numexpr\value{sectionstart}+1,...,\value{frametotal}} {
-        \reciteframe[\i]
-    }
+    \setcounter{frameindex}{\value{sectionstart}}%
+    \whiledo{\value{frameindex}<\value{frametotal}}{%
+        \stepcounter{frameindex}%
+        \reciteframe[\theframeindex]%
+    }%
 }
 
 % #1 Title

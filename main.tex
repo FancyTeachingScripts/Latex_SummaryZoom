@@ -6,14 +6,15 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % A random Demo Frame generator - Can be deleted for production
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\demoframe}{%
-  \begin{sframe}{Demo Frame No. \arabic{frametotal}} 
-    \centering
-    \huge Frame \arabic{frametotal} (Section \thesection)\par
-    
+\newcommand{\demoframe}[1]{%
+     \definesframe{Demo Frame No. #1} 
+    {
+        \centering
+        \huge Frame #1 (Section \thesection)\par
+        
         \vspace{0.5cm} 
-        \includegraphics[width=3cm]{sty/logo.svg} 
-  \end{sframe}%
+        \includesvg[width=3cm]{sty/logo.svg} 
+    }
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -53,7 +54,57 @@
 {false} % true/false: Repeat summary Zoom after slides 
 {true} % true/false: Show previous (since last summary zoom)
 {
-    \demoframe
+    \definesframe{Beamer Overlay/Animation Commands Demo}{
+        \centering
+        % Basic pause and onslide
+        Welcome to the overlay demo!\pause
+        
+        \onslide<2->{This appears from slide 2 onwards}
+        
+        \onslide<3>{This appears only on slide 3}
+        
+        \vspace{0.2cm}
+        
+        % Only command
+        \only<4>{This text is ONLY on slide 4}
+        \only<5->{This text appears from slide 5 onwards}
+        
+        % Uncover and visible
+        \uncover<6->{This text is uncovered from slide 6}
+        
+        \visible<7>{This is visible only on slide 7}
+        
+        % Invisible command
+        \invisible<8>{This text is invisible on slide 8}
+        Always visible text here.
+        
+        \vspace{0.2cm}
+        
+        % Alt command - skipped due to Beamer conflicts
+        % \alt<9>{Before slide 9: Red text}{After slide 9: Green text}
+        Alternative text handling can be done with \onslide<9->{This appears from slide 9}
+        
+        % Temporal command (before/on/after) 
+        \temporal<10>{Before slide 10}{Exactly on slide 10}{After slide 10}
+        
+        \vspace{0.2cm}
+        
+        % List with overlay items
+        Key points:
+        \begin{itemize}
+            \item<11-> First point appears on slide 11
+            \item<12-> Second point appears on slide 12  
+            \item<13> Third point only on slide 13
+            \item<14-> Fourth point from slide 14 onwards
+        \end{itemize}
+        
+        \vspace{0.2cm}
+        
+        \onslide<15->{
+            \includesvg[width=2cm]{sty/logo.svg}
+            Final slide: All overlay commands demonstrated!
+        }
+    }
 }
 
 
@@ -64,9 +115,9 @@
 {true} % true/false: Show previous (since last summary zoom)
 {
     % Every defined sframe appears in Summary Zoom
-    \demoframe
+    \demoframe{2}
     
-    \demoframe
+    \demoframe{3}
 }
 
 \ZoomSection % \ZoomSection or \Zoom: ZoomSection creates a section with a Summary Zoom and all sframes; Zoom only creates a Summary Zoom 
@@ -74,11 +125,11 @@
 {false} % true/false: Repeat summary Zoom after slides 
 {false} % true/false: Show previous (since last summary zoom)
 {
-    \demoframe
+    \demoframe{4}
     
-    \demoframe
+    \demoframe{5}
     
-    \demoframe
+    \demoframe{6}
 }
 
 \ZoomSection % \ZoomSection or \Zoom: ZoomSection creates a section with a Summary Zoom and all sframes; Zoom only creates a Summary Zoom 
@@ -86,13 +137,13 @@
 {true} % true/false: Repeat summary Zoom after slides 
 {false} % true/false: Show previous (since last summary zoom)
 {
-    \demoframe
+    \demoframe{7}
     
-    \demoframe
+    \demoframe{8}
     
-    \demoframe
+    \demoframe{9}
     
-    \demoframe
+    \demoframe{10}
 }
 
 
@@ -103,15 +154,15 @@
 {true} % true/false: Repeat summary Zoom after slides 
 {true} % true/false: Show previous (since last summary zoom)
 {
-    \demoframe
+    \demoframe{11}
     
-    \demoframe
+    \demoframe{12}
     
-    \demoframe
+    \demoframe{13}
     
-    \demoframe
+    \demoframe{14}
     
-    \demoframe
+    \demoframe{15}
 }
 
 \end{document}
