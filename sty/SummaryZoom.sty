@@ -1,0 +1,255 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{sty/SummaryZoom}[]
+
+\RequirePackage{ifthen}
+\RequirePackage{stackengine}
+\RequirePackage[german]{babel}
+\RequirePackage{forarray}
+\RequirePackage{pgffor}
+\RequirePackage{tikz}
+\RequirePackage{lengthconvert}
+
+\vfuzz=30pt
+
+\def\defaultpreviewscale{.3}% CAN SET THIS AS DESIRED FOR SCALE OF PREVIEW
+\def\insetHalignment{c}
+\def\insetValignment{t}
+
+%\def\insetHoffset{0pt}
+%\def\insetVoffset{0pt}
+
+
+\def\saveframeHoffset{-22pt}
+
+\def\insetHoffset{-22pt}
+\def\insetVoffset{1pt}
+
+\newlength{\framegap}
+
+
+\geometry{paperwidth=21cm, paperheight=11.81cm}
+\setbeamersize{text margin left=0.3cm, text margin right=0.3cm}
+\setlength\parindent{0pt}
+
+%
+\newcounter{frametotal}
+\newcounter{frameindex}
+\newcounter{sectionstart}
+\setcounter{sectionstart}{0}
+\newcounter{lastsecstart}
+\setcounter{lastsecstart}{0}
+\newcounter{lastsecframes}
+\setcounter{lastsecframes}{0}
+\newcounter{currentsecframes}
+\setcounter{currentsecframes}{0}
+
+
+\def\maxvalue(#1,#2){\ifnum #1>#2 #1\else #2\fi}
+
+\def\minvalue(#1,#2){\ifnum #1<#2 #1\else #2\fi}
+
+
+% sframe ENVIRONMENT USED TO SAVE FRAMES in \saveframebox[INDEX]
+\newenvironment{sframe}[1]%
+{
+    \stepcounter{frametotal}%
+    \expandafter\newsavebox\expandafter{%
+    \csname saveframebox\romannumeral\theframetotal\endcsname}%
+    \setbox0=\vbox\bgroup\begin{frame}{#1}
+}
+{
+    \end{frame}\leavevmode\unskip\setbox0=\lastbox\egroup%
+    \global\sbox{\csname saveframebox\romannumeral\theframetotal\endcsname}{\box0}%
+}
+
+% WHILE USED FOR PREVIEW MODE, \savedframe[scale]{frame #} CAN ALSO BE USED
+% TO RECALL PRIOR FRAMES
+\newcommand\savedframe[3][\defaultpreviewscale]
+{
+    \hspace{\saveframeHoffset+#3}
+    \fboxsep=0pt
+    \hyperlink{sframe:\romannumeral#2}{%
+        \fbox{
+            \pgfmathparse{#1 * (\textwidth/ \paperwidth)}
+            \scalebox{\pgfmathresult}{\hspace{0pt}{
+                \usebox{
+                    \csname saveframebox\romannumeral#2\endcsname
+                }
+                }
+            }
+        }
+    }
+}
+
+% WILL RECITE ALL sframes, USING PREVIEW MODE IF [P] IS THE OPTIONAL ARGUMENT
+\newcommand\reciteframes
+{%
+    \setcounter{frameindex}{0}%
+    \whiledo{\value{frameindex}<\numexpr\value{frametotal}-1\relax}{%
+        \stepcounter{frameindex}%
+        \begin{frame}
+         \label{sframe:\romannumeral\theframeindex}
+            \previewinset{\insetHalignment}{\insetHoffset}{\insetValignment}{\insetVoffset}%
+            {\savedframe[\defaultpreviewscale]{\numexpr\value{frameindex}+1\relax}{\saveframeHoffset}}%
+            {\usebox{\csname saveframebox\romannumeral\theframeindex\endcsname}}%
+        \end{frame}
+    }%
+    \begin{frame}
+         \label{sframe:\romannumeral\theframeindex}
+        \usebox{\csname saveframebox\romannumeral\theframetotal\endcsname}%
+    \end{frame}
+}% WILL RECITE ONE frames, USING PREVIEW MODE IF [P] IS THE OPTIONAL ARGUMENT
+
+\newcommand\reciteframe[1][\numexpr\theframeindex+1\relax]{%
+    \setcounter{frameindex}{#1}%
+    \ifnum\value{frameindex}<\numexpr\value{frametotal}\relax{%
+        \begin{frame}
+         \label{sframe:\romannumeral\theframeindex}
+            \previewinset{
+                \insetHalignment}{
+                \insetHoffset}{
+                \insetValignment}{
+                \insetVoffset
+            }{
+                \savedframe[\defaultpreviewscale]{
+                    \numexpr\value{frameindex}+1\relax
+                }{\saveframeHoffset}
+            }{
+                \usebox{\csname saveframebox\romannumeral\theframeindex\endcsname}
+            }%
+        \end{frame}
+    }
+    \else%
+        \begin{frame}
+            \usebox{\csname saveframebox\romannumeral\theframetotal\endcsname}%
+        \end{frame}
+    \fi
+    
+    
+}
+
+
+\newcommand{\summaryzoom}[2]{
+    \begin{frame}[plain]
+            \centering
+            \ifthenelse{\boolean{#2}}{
+                \ifthenelse{\value{lastsecstart}=\value{sectionstart}}{}{
+                    %%%%%%%%%%% lastsecframes %%%%%%%%%%% 
+                    \setcounter{lastsecframes}{\the\numexpr(\value{sectionstart}-\value{lastsecstart})}                    
+                    %%%%%%%%%%% \framewidth %%%%%%%%%%% 
+                    \pgfmathparse{0.85/\maxvalue(\value{lastsecframes},2)} \edef\framewidth{\pgfmathresult}
+                    %%%%%%%%%%% \gapwidth %%%%%%%%%%% 
+                    \pgfmathparse{0.05*\framewidth} \edef\gapwidth{\pgfmathresult}  
+                    %%%%%%%%%%% \indentWidth %%%%%%%%%%% 
+                    \pgfmathparse{-\saveframeHoffset-\gapwidth\textwidth} \edef\indentWidth{\pgfmathresult}
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+                    \hspace{\indentWidth pt}
+                    \foreach \i in {\the\numexpr\value{lastsecstart}+1,...,\value{sectionstart}} {
+                        \savedframe[\framewidth]{\i}{\gapwidth\textwidth}
+                    }
+                    
+                    \vfill
+                }
+                %%%%%%%%%%% currentsecframes %%%%%%%%%%% 
+                \setcounter{currentsecframes}{\the\numexpr(\value{frametotal}-\value{sectionstart})}
+                %%%%%%%%%%% \framewidth %%%%%%%%%%% 
+                \pgfmathparse{0.85/\maxvalue(\value{currentsecframes},2)} \edef\framewidth{\pgfmathresult} % float version  
+                %%%%%%%%%%% \gapwidth %%%%%%%%%%% 
+                \pgfmathparse{0.05*\framewidth} \edef\gapwidth{\pgfmathresult}  
+                %%%%%%%%%%% \indentWidth %%%%%%%%%%% 
+                \pgfmathparse{-\saveframeHoffset-\gapwidth\textwidth} \edef\indentWidth{\pgfmathresult}
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+                \hspace{\indentWidth pt}
+                \foreach \i in {\the\numexpr\value{sectionstart}+1,...,\value{frametotal}} {
+                        \savedframe[\framewidth]{\i}{\gapwidth\textwidth}
+                }
+            }{
+                %%%%%%%%%%% currentsecframes %%%%%%%%%%% 
+                \setcounter{currentsecframes}{\the\numexpr(\value{frametotal}-\value{sectionstart})} 
+                %%%%%%%%%%% break if >3 frames %%%%%%%%%%% 
+                \ifthenelse{\value{currentsecframes}>3}{
+                    %%%%%%%%%%% \framewidth %%%%%%%%%%% 
+                    \pgfmathparse{int(round(\value{currentsecframes}/2))}
+                    \pgfmathparse{0.85/\maxvalue(\pgfmathresult,2)}
+                    \edef\framewidth{\pgfmathresult}
+                    %%%%%%%%%%% \gapwidth %%%%%%%%%%% 
+                    \pgfmathparse{0.05*\framewidth} \edef\gapwidth{\pgfmathresult}
+                    %%%%%%%%%%% \midFrame %%%%%%%%%%% 
+                    \pgfmathparse{int(round(\value{sectionstart}+\value{currentsecframes}/2))} \edef\midFrame{\pgfmathresult}
+                    %%%%%%%%%%% \indentWidth %%%%%%%%%%% 
+                    \pgfmathparse{-\saveframeHoffset-\gapwidth\textwidth}
+                    \edef\indentWidth{\pgfmathresult}
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+                    \hspace{\indentWidth pt}
+                    \foreach \i in {\the\numexpr\value{sectionstart}+1,...,\midFrame} {
+                        \savedframe[\framewidth]{\i}{\gapwidth\textwidth}
+                    }
+
+                    %%%%%%%%%%% Linebreak %%%%%%%%%%% 
+                    
+                    \vspace{\gapwidth\textwidth}
+                    \hspace{\indentWidth pt}
+                    \foreach \i in {\the\numexpr\midFrame+1,...,\value{frametotal}} {
+                        \savedframe[\framewidth]{\i}{\gapwidth\textwidth}
+                    }
+                }{
+                    %%%%%%%%%%% \framewidth %%%%%%%%%%% 
+                    \pgfmathparse{0.85/\maxvalue(\value{currentsecframes},2)} \edef\framewidth{\pgfmathresult}  
+                    %%%%%%%%%%% \gapwidth %%%%%%%%%%% 
+                    \pgfmathparse{0.05*\framewidth} \edef\gapwidth{\pgfmathresult}  
+                    %%%%%%%%%%% \indentWidth %%%%%%%%%%% 
+                    \pgfmathparse{-\saveframeHoffset-\gapwidth\textwidth} \edef\indentWidth{\pgfmathresult}
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+                    \hspace{\indentWidth pt}
+                    \foreach \i in {\the\numexpr\value{sectionstart}+1,...,\value{frametotal}} {
+                        \savedframe[\framewidth]{\i}{\gapwidth\textwidth}
+                    }
+                }
+            }
+    \end{frame}
+}
+
+
+% ALLOW PREVIEW MODE TO BE TURNED ON [T] OPTION OR OFF [F]
+\newcommand\previewmode[1][T]{%
+  \ifx T#1\let\previewinset\stackinset\else\renewcommand\previewinset[6]{##6}\fi
+}
+
+\previewmode
+
+\previewmode[F]
+
+
+% recite all sframes since the last summary zoom
+\newcommand{\recitesection}{
+    \foreach \i in {\the\numexpr\value{sectionstart}+1,...,\value{frametotal}} {
+        \reciteframe[\i]
+    }
+}
+
+% #1 Title
+% #2 bool: repeat after slides 
+% #3 bool: show previous
+% #4 Content
+\newcommand{\Zoom}[4]{
+    \setcounter{lastsecstart}{\value{sectionstart}}
+    \setcounter{sectionstart}{\value{frametotal}}
+    #4
+    \summaryzoom{#1}{#3}
+    \recitesection    
+    \ifthenelse{\boolean{#2}}{
+        \summaryzoom{#1}{#3}
+    }{}
+}
+
+
+% #1 Title
+% #2 bool: repeat after slides 
+% #3 bool: show previous
+% #4 Content
+\newcommand{\ZoomSection}[4]{
+    \section{#1}
+    \Zoom{#1}{#2}{#3}{#4}
+}
+
+
