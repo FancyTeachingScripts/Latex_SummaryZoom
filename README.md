@@ -11,6 +11,11 @@ Besides the sample code in the main.tex of this repository, the following code s
 \documentclass[aspectratio=169]{beamer}
 \usepackage{sty/SummaryZoom}
 
+% Recommended theming:
+\usetheme{moloch} % More modern theme. Comment out for default theme. 
+\usecolortheme{owl} % ~Darkmode (looks ugly with moloch-light theme)
+\setbeamertemplate{navigation symbols}{} % Remove navigation 
+
 \ZoomSection % \ZoomSection or \Zoom (without creating a section)
 {Some title} % Zoom (and Section) title
 {false} % true/false: Repeat summary Zoom after slides 
