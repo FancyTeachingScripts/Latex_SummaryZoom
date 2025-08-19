@@ -24,14 +24,14 @@ Tested with TexLive 2024 in Overleaf.
 {false} % true/false: Repeat summary Zoom after slides 
 {false} % true/false: Show previous (since last summary zoom)
 {
-    \begin{sframe}{Frame title} 
+    \definesframe{Frame title}{
         Use sframe instead of frame to create a slide
         that is part of the summary zoom.
-    \end{sframe}
+    }
     
-    \begin{sframe}{Another frame} 
+    \definesframe{Another frame title}{
         ...
-    \end{sframe}
+    }
 }
 ```
 
