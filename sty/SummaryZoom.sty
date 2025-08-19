@@ -68,26 +68,26 @@
     % Redefine overlay commands to show final state only using safe non-recursive approach
     \def\pause{}% Complete ignore
     \def\onslide{\@ifnextchar<{\sframe@onslide@angle}{\sframe@onslide@noangle}}%
-    \def\sframe@onslide@angle<##1>##2{##2}% Show content, ignore overlay spec
+    \long\def\sframe@onslide@angle<##1>##2{##2}% Show content, ignore overlay spec
     \def\sframe@onslide@noangle##1{}% Ignore non-angle form
     \def\only{\@ifnextchar<{\sframe@only@angle}{\sframe@only@noangle}}%
-    \def\sframe@only@angle<##1>##2{##2}% Show content, ignore overlay spec  
+    \long\def\sframe@only@angle<##1>##2{##2}% Show content, ignore overlay spec  
     \def\sframe@only@noangle##1{}% Ignore non-angle form
     \def\uncover{\@ifnextchar<{\sframe@uncover@angle}{\sframe@uncover@noangle}}%
-    \def\sframe@uncover@angle<##1>##2{##2}% Show content, ignore overlay spec
+    \long\def\sframe@uncover@angle<##1>##2{##2}% Show content, ignore overlay spec
     \def\sframe@uncover@noangle##1{}% Ignore non-angle form
     \def\visible{\@ifnextchar<{\sframe@visible@angle}{\sframe@visible@noangle}}%
-    \def\sframe@visible@angle<##1>##2{##2}% Show content, ignore overlay spec
+    \long\def\sframe@visible@angle<##1>##2{##2}% Show content, ignore overlay spec
     \def\sframe@visible@noangle##1{}% Ignore non-angle form
     \def\invisible{\@ifnextchar<{\sframe@invisible@angle}{\sframe@invisible@noangle}}%
-    \def\sframe@invisible@angle<##1>##2{}% Hide content completely
+    \long\def\sframe@invisible@angle<##1>##2{}% Hide content completely
     \def\sframe@invisible@noangle##1{}% Ignore non-angle form
     \def\temporal{\@ifnextchar<{\sframe@temporal@angle}{\sframe@temporal@noangle}}%
-    \def\sframe@temporal@angle<##1>##2##3##4{##4}% Show 'after' content
-    \def\sframe@temporal@noangle##1##2##3{##3}% Show last argument if no angle
+    \long\def\sframe@temporal@angle<##1>##2##3##4{##4}% Show 'after' content
+    \long\def\sframe@temporal@noangle##1##2##3{##3}% Show last argument if no angle
     % Handle itemize overlays by redefining item to ignore overlay specs
     \def\item{\@ifnextchar<{\sframe@item@ignoreoverlay}{\olditem}}%
-    \def\sframe@item@ignoreoverlay##1{\olditem}% Ignore <spec> and use normal item
+    \def\sframe@item@ignoreoverlay<##1>{\olditem}% Ignore <spec> and use normal item
     \setbox0=\vbox\bgroup\begin{frame}{#1}
 }
 {
@@ -128,26 +128,26 @@
     % Safely redefine overlay commands to avoid recursion
     \def\pause{}% Complete ignore
     \def\onslide{\@ifnextchar<{\definesframe@onslide@angle}{\definesframe@onslide@noangle}}%
-    \def\definesframe@onslide@angle<##1>##2{##2}% Show content, ignore overlay spec
+    \long\def\definesframe@onslide@angle<##1>##2{##2}% Show content, ignore overlay spec
     \def\definesframe@onslide@noangle##1{}% Ignore non-angle form
     \def\only{\@ifnextchar<{\definesframe@only@angle}{\definesframe@only@noangle}}%
-    \def\definesframe@only@angle<##1>##2{##2}% Show content, ignore overlay spec  
+    \long\def\definesframe@only@angle<##1>##2{##2}% Show content, ignore overlay spec  
     \def\definesframe@only@noangle##1{}% Ignore non-angle form
     \def\uncover{\@ifnextchar<{\definesframe@uncover@angle}{\definesframe@uncover@noangle}}%
-    \def\definesframe@uncover@angle<##1>##2{##2}% Show content, ignore overlay spec
+    \long\def\definesframe@uncover@angle<##1>##2{##2}% Show content, ignore overlay spec
     \def\definesframe@uncover@noangle##1{}% Ignore non-angle form
     \def\visible{\@ifnextchar<{\definesframe@visible@angle}{\definesframe@visible@noangle}}%
-    \def\definesframe@visible@angle<##1>##2{##2}% Show content, ignore overlay spec
+    \long\def\definesframe@visible@angle<##1>##2{##2}% Show content, ignore overlay spec
     \def\definesframe@visible@noangle##1{}% Ignore non-angle form
     \def\invisible{\@ifnextchar<{\definesframe@invisible@angle}{\definesframe@invisible@noangle}}%
-    \def\definesframe@invisible@angle<##1>##2{}% Hide content completely
+    \long\def\definesframe@invisible@angle<##1>##2{}% Hide content completely
     \def\definesframe@invisible@noangle##1{}% Ignore non-angle form
     \def\temporal{\@ifnextchar<{\definesframe@temporal@angle}{\definesframe@temporal@noangle}}%
-    \def\definesframe@temporal@angle<##1>##2##3##4{##4}% Show 'after' content
-    \def\definesframe@temporal@noangle##1##2##3{##3}% Show last argument if no angle
+    \long\def\definesframe@temporal@angle<##1>##2##3##4{##4}% Show 'after' content
+    \long\def\definesframe@temporal@noangle##1##2##3{##3}% Show last argument if no angle
     % Handle itemize overlays by redefining item to ignore overlay specs
     \def\item{\@ifnextchar<{\definesframe@item@ignoreoverlay}{\olditem}}%
-    \def\definesframe@item@ignoreoverlay##1{\olditem}% Ignore <spec> and use normal item
+    \def\definesframe@item@ignoreoverlay<##1>{\olditem}% Ignore <spec> and use normal item
     % Create the frame using the same approach as sframe environment
     \setbox0=\vbox\bgroup\begin{frame}{#1}#2\end{frame}\leavevmode\unskip\setbox0=\lastbox\egroup%
     \global\sbox{\csname saveframebox\romannumeral\theframetotal\endcsname}{\box0}%
