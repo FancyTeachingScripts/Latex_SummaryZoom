@@ -7,6 +7,9 @@ It offers options to show the summary at the beginning of a defined set of slide
 
 Besides the sample code in the main.tex of this repository, the following code snippet shows how to use the library in a beamer document.
 
+**Compile with LuaLatex (or if not available with Xelatex)!**
+Tested with TexLive 2024 in Overleaf.
+
 ```Tex
 \documentclass[aspectratio=169]{beamer}
 \usepackage{sty/SummaryZoom}
