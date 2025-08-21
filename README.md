@@ -12,7 +12,10 @@ Tested with TexLive 2024 in Overleaf.
 
 ```Tex
 \documentclass[aspectratio=169]{beamer}
-\usepackage{sty/SummaryZoom}
+\usepackage[
+    %plain      % --> if active sframes are created with option 'plain' (no title bar)
+]{sty/SummaryZoom}
+
 
 % Recommended theming:
 \usetheme{moloch} % More modern theme. Comment out for default theme. 
