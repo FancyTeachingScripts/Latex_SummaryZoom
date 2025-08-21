@@ -34,8 +34,8 @@
 \newlength{\framegap}
 
 
-\geometry{paperwidth=21cm, paperheight=11.81cm}
-\setbeamersize{text margin left=0.3cm, text margin right=0.3cm}
+%\geometry{paperwidth=21cm, paperheight=11.81cm}
+%\setbeamersize{text margin left=0.3cm, text margin right=0.3cm}
 \setlength\parindent{0pt}
 
 %
@@ -218,7 +218,7 @@
         \ifcsname sframecontent\romannumeral\theframeindex\endcsname%
             % Use stored content with live animations
             % Set the label on the first slide of the animation sequence
-            \begin{frame}\ifplain[plain]\else\frametitle{\csname sframetitle\romannumeral\theframeindex\endcsname}\fi
+            \begin{frame}\ifplain\else\frametitle{\csname sframetitle\romannumeral\theframeindex\endcsname}\fi
                 \label{sframe:\romannumeral\theframeindex}
                 \hypertarget{sframe:\romannumeral\theframeindex}{}
                 \csname sframecontent\romannumeral\theframeindex\endcsname%
@@ -246,7 +246,7 @@
     \else%
         % Last frame - check if it has stored content  
         \ifcsname sframecontent\romannumeral\theframetotal\endcsname%
-            \begin{frame}\ifplain[plain]\else\frametitle{\csname sframetitle\romannumeral\theframeindex\endcsname}\fi
+            \begin{frame}\ifplain\else\frametitle{\csname sframetitle\romannumeral\theframeindex\endcsname}\fi
             \onslide<1>{\label{sframe:\romannumeral\theframetotal}\hypertarget{sframe:\romannumeral\theframetotal}{}} 
                 %\label{sframe:\romannumeral\theframetotal}
                 \csname sframecontent\romannumeral\theframetotal\endcsname%
