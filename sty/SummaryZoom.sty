@@ -1,6 +1,10 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{sty/SummaryZoom}[]
 
+\newif\ifplain
+\DeclareOption{plain}{ \plaintrue }
+\ProcessOptions\relax
+
 \RequirePackage{ifthen}
 \RequirePackage{stackengine}
 \RequirePackage[german]{babel}
@@ -9,6 +13,8 @@
 \RequirePackage{tikz}
 \RequirePackage{lengthconvert}
 \RequirePackage{svg}
+%\RequirePackage{showkeys}
+%\RequirePackage{labelschanged}
 
 \vfuzz=30pt
 
@@ -88,7 +94,7 @@
     % Handle itemize overlays by redefining item to ignore overlay specs
     \def\item{\@ifnextchar<{\sframe@item@ignoreoverlay}{\olditem}}%
     \def\sframe@item@ignoreoverlay<##1>{\olditem}% Ignore <spec> and use normal item
-    \setbox0=\vbox\bgroup\begin{frame}{#1}
+    \setbox0=\vbox\bgroup\begin{frame}\ifplain [plain] \else {#1} \fi
 }
 {
     \end{frame}\leavevmode\unskip\setbox0=\lastbox\egroup%
@@ -149,7 +155,7 @@
     \def\item{\@ifnextchar<{\definesframe@item@ignoreoverlay}{\olditem}}%
     \def\definesframe@item@ignoreoverlay<##1>{\olditem}% Ignore <spec> and use normal item
     % Create the frame using the same approach as sframe environment
-    \setbox0=\vbox\bgroup\begin{frame}{#1}#2\end{frame}\leavevmode\unskip\setbox0=\lastbox\egroup%
+    \setbox0=\vbox\bgroup\begin{frame}\ifplain[plain]\else{#1}\fi#2\end{frame}\leavevmode\unskip\setbox0=\lastbox\egroup%
     \global\sbox{\csname saveframebox\romannumeral\theframetotal\endcsname}{\box0}%
     % Restore original overlay commands
     \let\onslide\oldonslide%
@@ -168,6 +174,8 @@
 {
     \hspace{\saveframeHoffset+#3}
     \fboxsep=0pt
+    % Debug: show what we're linking to
+    %sframe:\romannumeral#2
     \hyperlink{sframe:\romannumeral#2}{%
         \fbox{
             \pgfmathparse{#1 * (\textwidth/ \paperwidth)}
@@ -187,16 +195,18 @@
     \setcounter{frameindex}{0}%
     \whiledo{\value{frameindex}<\numexpr\value{frametotal}-1\relax}{%
         \stepcounter{frameindex}%
-        \begin{frame}
+        \begin{frame}\ifplain[plain]\fi
          \label{sframe:\romannumeral\theframeindex}
+         \hypertarget{sframe:\romannumeral\theframeindex}{}
             \previewinset{\insetHalignment}{\insetHoffset}{\insetValignment}{\insetVoffset}%
             {\savedframe[\defaultpreviewscale]{\numexpr\value{frameindex}+1\relax}{\saveframeHoffset}}%
             {\usebox{\csname saveframebox\romannumeral\theframeindex\endcsname}}%
         \end{frame}
     }%
     \stepcounter{frameindex}%
-    \begin{frame}
+    \begin{frame}\ifplain[plain]\fi
          \label{sframe:\romannumeral\theframeindex}
+         \hypertarget{sframe:\romannumeral\theframeindex}{}
         \usebox{\csname saveframebox\romannumeral\theframetotal\endcsname}%
     \end{frame}
 }% WILL RECITE ONE frames, USING PREVIEW MODE IF [P] IS THE OPTIONAL ARGUMENT
@@ -208,14 +218,16 @@
         \ifcsname sframecontent\romannumeral\theframeindex\endcsname%
             % Use stored content with live animations
             % Set the label on the first slide of the animation sequence
-            \begin{frame}<1->{\csname sframetitle\romannumeral\theframeindex\endcsname}
-                \label<1>{sframe:\romannumeral\theframeindex}
+            \begin{frame}\ifplain[plain]\else\frametitle{\csname sframetitle\romannumeral\theframeindex\endcsname}\fi
+                \label{sframe:\romannumeral\theframeindex}
+                \hypertarget{sframe:\romannumeral\theframeindex}{}
                 \csname sframecontent\romannumeral\theframeindex\endcsname%
             \end{frame}
         \else%
             % Use traditional method with preview inset
-            \begin{frame}
-             \label{sframe:\romannumeral\theframeindex}
+            \begin{frame}\ifplain[plain]\fi
+                \label{sframe:\romannumeral\theframeindex}
+                \hypertarget{sframe:\romannumeral\theframeindex}{}
                 \previewinset{
                     \insetHalignment}{
                     \insetHoffset}{
@@ -234,13 +246,14 @@
     \else%
         % Last frame - check if it has stored content  
         \ifcsname sframecontent\romannumeral\theframetotal\endcsname%
-            \begin{frame}<1->{\csname sframetitle\romannumeral\theframetotal\endcsname}
-                \label<1>{sframe:\romannumeral\theframetotal}
+            \begin{frame}\ifplain[plain]\else\frametitle{\csname sframetitle\romannumeral\theframeindex\endcsname}\fi
+            \onslide<1>{\label{sframe:\romannumeral\theframetotal}\hypertarget{sframe:\romannumeral\theframetotal}{}} 
+                %\label{sframe:\romannumeral\theframetotal}
                 \csname sframecontent\romannumeral\theframetotal\endcsname%
             \end{frame}
         \else%
-            \begin{frame}
-                \label{sframe:\romannumeral\theframetotal}
+            \begin{frame}\ifplain[plain]\fi
+                \onslide<1>{\label{sframe:\romannumeral\theframetotal}\hypertarget{sframe:\romannumeral\theframetotal}{}} 
                 \usebox{\csname saveframebox\romannumeral\theframetotal\endcsname}%
             \end{frame}
         \fi%
@@ -372,5 +385,3 @@
     \section{#1}
     \Zoom{#1}{#2}{#3}{#4}
 }
-
-
