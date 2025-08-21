@@ -94,7 +94,7 @@
     % Handle itemize overlays by redefining item to ignore overlay specs
     \def\item{\@ifnextchar<{\sframe@item@ignoreoverlay}{\olditem}}%
     \def\sframe@item@ignoreoverlay<##1>{\olditem}% Ignore <spec> and use normal item
-    \setbox0=\vbox\bgroup\begin{frame}\ifplain [plain] \else {#1} \fi
+    \setbox0=\vbox\bgroup\begin{frame}\ifplain\else{#1}\fi
 }
 {
     \end{frame}\leavevmode\unskip\setbox0=\lastbox\egroup%
@@ -155,7 +155,7 @@
     \def\item{\@ifnextchar<{\definesframe@item@ignoreoverlay}{\olditem}}%
     \def\definesframe@item@ignoreoverlay<##1>{\olditem}% Ignore <spec> and use normal item
     % Create the frame using the same approach as sframe environment
-    \setbox0=\vbox\bgroup\begin{frame}\ifplain[plain]\else{#1}\fi#2\end{frame}\leavevmode\unskip\setbox0=\lastbox\egroup%
+    \setbox0=\vbox\bgroup\begin{frame}\ifplain\else\frametitle{#1}\fi#2\end{frame}\leavevmode\unskip\setbox0=\lastbox\egroup%
     \global\sbox{\csname saveframebox\romannumeral\theframetotal\endcsname}{\box0}%
     % Restore original overlay commands
     \let\onslide\oldonslide%
@@ -195,7 +195,7 @@
     \setcounter{frameindex}{0}%
     \whiledo{\value{frameindex}<\numexpr\value{frametotal}-1\relax}{%
         \stepcounter{frameindex}%
-        \begin{frame}\ifplain[plain]\fi
+        \begin{frame}%\ifplain[plain]\fi
          \label{sframe:\romannumeral\theframeindex}
          \hypertarget{sframe:\romannumeral\theframeindex}{}
             \previewinset{\insetHalignment}{\insetHoffset}{\insetValignment}{\insetVoffset}%
@@ -204,7 +204,7 @@
         \end{frame}
     }%
     \stepcounter{frameindex}%
-    \begin{frame}\ifplain[plain]\fi
+    \begin{frame}%\ifplain[plain]\fi
          \label{sframe:\romannumeral\theframeindex}
          \hypertarget{sframe:\romannumeral\theframeindex}{}
         \usebox{\csname saveframebox\romannumeral\theframetotal\endcsname}%
@@ -225,7 +225,7 @@
             \end{frame}
         \else%
             % Use traditional method with preview inset
-            \begin{frame}\ifplain[plain]\fi
+            \begin{frame}%\ifplain[plain]\fi
                 \label{sframe:\romannumeral\theframeindex}
                 \hypertarget{sframe:\romannumeral\theframeindex}{}
                 \previewinset{
@@ -252,7 +252,7 @@
                 \csname sframecontent\romannumeral\theframetotal\endcsname%
             \end{frame}
         \else%
-            \begin{frame}\ifplain[plain]\fi
+            \begin{frame}%\ifplain[plain]\fi
                 \onslide<1>{\label{sframe:\romannumeral\theframetotal}\hypertarget{sframe:\romannumeral\theframetotal}{}} 
                 \usebox{\csname saveframebox\romannumeral\theframetotal\endcsname}%
             \end{frame}
