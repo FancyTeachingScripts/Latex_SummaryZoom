@@ -24,25 +24,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Install Inkscape for SVG processing
-      - name: Install Inkscape
+      # Convert SVG to PDF using Inkscape before LaTeX compilation
+      - name: Convert SVG to PDF
         run: |
           sudo apt update
           sudo apt install -y inkscape
-          which inkscape
-          inkscape --version
+          cd sty
+          inkscape --export-type=pdf --export-filename=logo_svg-tex.pdf logo.svg
 
       # Compile LaTeX document to PDF using XeLaTeX
       - name: Compile LaTeX document
         uses: xu-cheng/latex-action@v3
         with:
           root_file: main.tex
-          os: debian
           compiler: xelatex
           args: -shell-escape
-          pre_compile: |
-            which inkscape || (apt update && apt install -y inkscape)
-            inkscape --version
 
       # Upload PDF to release assets
       - name: Upload PDF to release
