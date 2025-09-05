@@ -26,7 +26,11 @@ jobs:
 
       # Install Inkscape for SVG processing
       - name: Install Inkscape
-        run: sudo apt-get update && sudo apt-get install -y inkscape
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y inkscape
+          which inkscape
+          inkscape --version
 
       # Compile LaTeX document to PDF using XeLaTeX
       - name: Compile LaTeX document
@@ -35,6 +39,9 @@ jobs:
           root_file: main.tex
           compiler: xelatex
           args: -shell-escape
+          pre_compile: |
+            which inkscape || (apt-get update && apt-get install -y inkscape)
+            inkscape --version
 
       # Upload PDF to release assets
       - name: Upload PDF to release
