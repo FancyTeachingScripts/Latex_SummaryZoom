@@ -34,9 +34,13 @@ jobs:
           ls -la sty/logo.pdf
           # Create a backup of main.tex and modify it to use PDF instead of SVG
           cp main.tex main.tex.bak
-          sed -i 's/\\includesvg\[width=2cm\]{sty\/logo\.svg}/\\includegraphics[width=2cm]{sty\/logo.pdf}/g' main.tex
+          # Replace all includesvg commands with includegraphics, preserving the width parameter
+          sed -i 's/\\includesvg\[\([^]]*\)\]{sty\/logo\.svg}/\\includegraphics[\1]{sty\/logo.pdf}/g' main.tex
           echo "Modified main.tex to use PDF instead of SVG"
-          grep -n "includegraphics.*logo" main.tex || echo "No changes found"
+          echo "Changes made:"
+          grep -n "includegraphics.*logo" main.tex || echo "No includegraphics found"
+          echo "Remaining includesvg commands:"
+          grep -n "includesvg" main.tex || echo "All includesvg commands replaced"
 
       # Compile LaTeX document to PDF using XeLaTeX
       - name: Compile LaTeX document
