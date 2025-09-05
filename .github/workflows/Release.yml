@@ -33,13 +33,19 @@ jobs:
           ls -la sty/logo.pdf
           # Create a backup of main.tex and modify it to use PDF instead of SVG
           cp main.tex main.tex.bak
+          cp main_plain.tex main_plain.tex.bak
           # Replace all includesvg commands with includegraphics, preserving the width parameter
           sed -i 's/\\includesvg\[\([^]]*\)\]{sty\/logo\.svg}/\\includegraphics[\1]{sty\/logo.pdf}/g' main.tex
-          echo "Modified main.tex to use PDF instead of SVG"
-          echo "Changes made:"
-          grep -n "includegraphics.*logo" main.tex || echo "No includegraphics found"
-          echo "Remaining includesvg commands:"
-          grep -n "includesvg" main.tex || echo "All includesvg commands replaced"
+          sed -i 's/\\includesvg\[\([^]]*\)\]{sty\/logo\.svg}/\\includegraphics[\1]{sty\/logo.pdf}/g' main_plain.tex
+          echo "Modified main.tex and main_plain.tex to use PDF instead of SVG"
+          echo "Changes made in main.tex:"
+          grep -n "includegraphics.*logo" main.tex || echo "No includegraphics found in main.tex"
+          echo "Changes made in main_plain.tex:"
+          grep -n "includegraphics.*logo" main_plain.tex || echo "No includegraphics found in main_plain.tex"
+          echo "Remaining includesvg commands in main.tex:"
+          grep -n "includesvg" main.tex || echo "All includesvg commands replaced in main.tex"
+          echo "Remaining includesvg commands in main_plain.tex:"
+          grep -n "includesvg" main_plain.tex || echo "All includesvg commands replaced in main_plain.tex"
 
       # Upload prepared files for the compile jobs
       - name: Upload prepared files
