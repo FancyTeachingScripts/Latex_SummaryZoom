@@ -50,6 +50,7 @@ jobs:
             main.tex
             sty/
           retention-days: 1
+          compression-level: 0
 
   # Job to compile the LaTeX document
   compile:
@@ -76,6 +77,7 @@ jobs:
           name: compiled-pdf
           path: main.pdf
           retention-days: 1
+          compression-level: 0
 
   # Job to upload PDF as artifact (runs after compilation)
   upload-artifact:
@@ -94,7 +96,7 @@ jobs:
         with:
           name: SummaryZoom-PDF
           path: main.pdf
-          retention-days: 90
+          compression-level: 0
 
   # Job to upload PDF to release (only runs on release events)
   upload-release:
