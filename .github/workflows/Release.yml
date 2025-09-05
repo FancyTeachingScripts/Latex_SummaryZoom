@@ -79,6 +79,33 @@ jobs:
           retention-days: 1
           compression-level: 0
 
+  # Job to compile the plain LaTeX document (runs in parallel with main compile)
+  compile-plain:
+    runs-on: ubuntu-latest
+    needs: prepare
+    steps:
+      # Download the prepared files
+      - name: Download prepared files
+        uses: actions/download-artifact@v4
+        with:
+          name: prepared-latex-files
+
+      # Compile plain LaTeX document to PDF using XeLaTeX
+      - name: Compile plain LaTeX document
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main_plain.tex
+          compiler: xelatex
+
+      # Upload compiled plain PDF for other jobs
+      - name: Upload compiled plain PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: compiled-plain-pdf
+          path: main_plain.pdf
+          retention-days: 1
+          compression-level: 0
+
   # Job to upload PDF as artifact (runs after compilation)
   upload-artifact:
     runs-on: ubuntu-latest
@@ -96,6 +123,25 @@ jobs:
         with:
           name: SummaryZoom-PDF
           path: main.pdf
+          compression-level: 0
+
+  # Job to upload plain PDF as artifact (runs after plain compilation)
+  upload-plain-artifact:
+    runs-on: ubuntu-latest
+    needs: compile-plain
+    steps:
+      # Download the compiled plain PDF
+      - name: Download compiled plain PDF
+        uses: actions/download-artifact@v4
+        with:
+          name: compiled-plain-pdf
+
+      # Upload plain PDF as job artifact with longer retention
+      - name: Upload plain PDF as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SummaryZoom-Plain-PDF
+          path: main_plain.pdf
           compression-level: 0
 
   # Job to upload PDF to release (only runs on release events)
