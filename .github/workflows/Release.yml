@@ -42,9 +42,13 @@ jobs:
           args: -shell-escape
           pre_compile: |
             echo '#!/bin/sh' > /usr/local/bin/inkscape
-            echo 'echo "Inkscape fake version 1.0"' >> /usr/local/bin/inkscape
+            echo 'if [ "$1" = "-V" ] || [ "$1" = "--version" ]; then' >> /usr/local/bin/inkscape
+            echo '  echo "Inkscape 1.0 (4035a4f, 2020-05-01)"' >> /usr/local/bin/inkscape
+            echo 'else' >> /usr/local/bin/inkscape
+            echo '  echo "Inkscape fake - file already converted"' >> /usr/local/bin/inkscape
+            echo 'fi' >> /usr/local/bin/inkscape
             chmod +x /usr/local/bin/inkscape
-            which inkscape
+            inkscape -V
 
       # Upload PDF to release assets
       - name: Upload PDF to release
