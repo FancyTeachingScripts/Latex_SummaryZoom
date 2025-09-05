@@ -175,22 +175,12 @@ jobs:
 
       # Upload main PDF to release assets
       - name: Upload PDF to release
-        uses: actions/upload-release-asset@v1
+        run: gh release upload ${{ github.event.release.tag_name }} ./main.pdf --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./main.pdf
-          asset_name: SummaryZoom.pdf
-          asset_content_type: application/pdf
 
       # Upload plain PDF to release assets
       - name: Upload plain PDF to release
-        uses: actions/upload-release-asset@v1
+        run: gh release upload ${{ github.event.release.tag_name }} ./main_plain.pdf --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./main_plain.pdf
-          asset_name: SummaryZoom-Plain.pdf
-          asset_content_type: application/pdf
