@@ -31,6 +31,7 @@ jobs:
           sudo apt install -y inkscape
           cd sty
           inkscape --export-type=pdf --export-filename=logo_svg-tex.pdf logo.svg
+          ls -la logo_svg-tex.pdf
 
       # Compile LaTeX document to PDF using XeLaTeX
       - name: Compile LaTeX document
@@ -39,6 +40,11 @@ jobs:
           root_file: main.tex
           compiler: xelatex
           args: -shell-escape
+          pre_compile: |
+            echo '#!/bin/sh' > /usr/local/bin/inkscape
+            echo 'echo "Inkscape fake version 1.0"' >> /usr/local/bin/inkscape
+            chmod +x /usr/local/bin/inkscape
+            which inkscape
 
       # Upload PDF to release assets
       - name: Upload PDF to release
