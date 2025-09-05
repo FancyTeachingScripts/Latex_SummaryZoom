@@ -4,6 +4,7 @@ name: Compile and Release PDF
 
 # Controls when the workflow will run
 on:
+  [push]
   # Triggers the workflow when a release is created
   release:
     types: [created]
@@ -48,6 +49,14 @@ jobs:
         with:
           root_file: main.tex
           compiler: xelatex
+
+      # Always upload PDF as job artifact
+      - name: Upload PDF as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SummaryZoom-PDF
+          path: main.pdf
+          retention-days: 90
 
       # Upload PDF to release assets
       - name: Upload PDF to release
