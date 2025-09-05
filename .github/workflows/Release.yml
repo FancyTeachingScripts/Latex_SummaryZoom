@@ -24,14 +24,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Convert SVG to PDF using Inkscape before LaTeX compilation
-      - name: Convert SVG to PDF
+      # Convert SVG to PDF and modify LaTeX to use it directly
+      - name: Convert SVG to PDF and prepare LaTeX
         run: |
           sudo apt update
           sudo apt install -y inkscape
-          # Convert the SVG to the exact filename that LaTeX expects
-          inkscape --export-type=pdf --export-filename=sty/logo_svg-tex.pdf sty/logo.svg
-          ls -la sty/logo_svg-tex.pdf
+          # Convert the SVG to PDF with a simple name
+          inkscape --export-type=pdf --export-filename=sty/logo.pdf sty/logo.svg
+          ls -la sty/logo.pdf
+          # Create a backup of main.tex and modify it to use PDF instead of SVG
+          cp main.tex main.tex.bak
+          sed -i 's/\\includesvg\[width=2cm\]{sty\/logo\.svg}/\\includegraphics[width=2cm]{sty\/logo.pdf}/g' main.tex
+          echo "Modified main.tex to use PDF instead of SVG"
+          grep -n "includegraphics.*logo" main.tex || echo "No changes found"
 
       # Compile LaTeX document to PDF using XeLaTeX
       - name: Compile LaTeX document
@@ -39,19 +44,6 @@ jobs:
         with:
           root_file: main.tex
           compiler: xelatex
-          args: -shell-escape
-          pre_compile: |
-            echo '#!/bin/sh' > /usr/local/bin/inkscape
-            echo 'if [ "$1" = "-V" ] || [ "$1" = "--version" ]; then' >> /usr/local/bin/inkscape
-            echo '  echo "Inkscape 1.0 (4035a4f, 2020-05-01)"' >> /usr/local/bin/inkscape
-            echo 'elif echo "$@" | grep -q "export"; then' >> /usr/local/bin/inkscape
-            echo '  echo "Export successful (file already converted)"' >> /usr/local/bin/inkscape
-            echo '  exit 0' >> /usr/local/bin/inkscape
-            echo 'else' >> /usr/local/bin/inkscape
-            echo '  echo "Inkscape fake - command: $@"' >> /usr/local/bin/inkscape
-            echo 'fi' >> /usr/local/bin/inkscape
-            chmod +x /usr/local/bin/inkscape
-            ls -la sty/logo_svg-tex.pdf || echo "PDF file not found"
 
       # Upload PDF to release assets
       - name: Upload PDF to release
