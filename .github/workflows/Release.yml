@@ -77,12 +77,13 @@ jobs:
           root_file: main.tex
           compiler: xelatex
 
-      # Upload final PDF as artifact
-      - name: Upload PDF as artifact
+      # Upload compiled PDF for combination job
+      - name: Upload compiled PDF
         uses: actions/upload-artifact@v4
         with:
-          name: SummaryZoom-PDF
+          name: temp-main-pdf
           path: main.pdf
+          retention-days: 1
           compression-level: 0
 
   # Job to compile the plain LaTeX document (runs in parallel with main compile)
@@ -103,12 +104,13 @@ jobs:
           root_file: main_plain.tex
           compiler: xelatex
 
-      # Upload final plain PDF as artifact
-      - name: Upload plain PDF as artifact
+      # Upload compiled plain PDF for combination job
+      - name: Upload compiled plain PDF
         uses: actions/upload-artifact@v4
         with:
-          name: SummaryZoom-Plain-PDF
+          name: temp-plain-pdf
           path: main_plain.pdf
+          retention-days: 1
           compression-level: 0
 
   # Job to create combined PDF artifact (runs after both compilations)
@@ -120,12 +122,12 @@ jobs:
       - name: Download main PDF
         uses: actions/download-artifact@v4
         with:
-          name: SummaryZoom-PDF
+          name: temp-main-pdf
 
       - name: Download plain PDF
         uses: actions/download-artifact@v4
         with:
-          name: SummaryZoom-Plain-PDF
+          name: temp-plain-pdf
 
       # Upload combined PDF package
       - name: Upload combined PDF package
@@ -143,17 +145,17 @@ jobs:
     needs: [compile, compile-plain]
     if: github.event_name == 'release'
     steps:
-      # Download the compiled PDF
-      - name: Download compiled PDF
+      # Download the compiled PDFs
+      - name: Download main PDF
         uses: actions/download-artifact@v4
         with:
-          name: SummaryZoom-PDF
+          name: temp-main-pdf
 
       # Download the compiled plain PDF
-      - name: Download compiled plain PDF
+      - name: Download plain PDF
         uses: actions/download-artifact@v4
         with:
-          name: SummaryZoom-Plain-PDF
+          name: temp-plain-pdf
 
       # Upload main PDF to release assets
       - name: Upload PDF to release
