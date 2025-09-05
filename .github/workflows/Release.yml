@@ -41,13 +41,14 @@ jobs:
           echo "Remaining includesvg commands:"
           grep -n "includesvg" main.tex || echo "All includesvg commands replaced"
 
-      # Upload prepared files for the compile job
+      # Upload prepared files for the compile jobs
       - name: Upload prepared files
         uses: actions/upload-artifact@v4
         with:
           name: prepared-latex-files
           path: |
             main.tex
+            main_plain.tex
             sty/
           retention-days: 1
           compression-level: 0
@@ -70,13 +71,12 @@ jobs:
           root_file: main.tex
           compiler: xelatex
 
-      # Upload compiled PDF for other jobs
-      - name: Upload compiled PDF
+      # Upload final PDF as artifact
+      - name: Upload PDF as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: compiled-pdf
+          name: SummaryZoom-PDF
           path: main.pdf
-          retention-days: 1
           compression-level: 0
 
   # Job to compile the plain LaTeX document (runs in parallel with main compile)
@@ -97,46 +97,7 @@ jobs:
           root_file: main_plain.tex
           compiler: xelatex
 
-      # Upload compiled plain PDF for other jobs
-      - name: Upload compiled plain PDF
-        uses: actions/upload-artifact@v4
-        with:
-          name: compiled-plain-pdf
-          path: main_plain.pdf
-          retention-days: 1
-          compression-level: 0
-
-  # Job to upload PDF as artifact (runs after compilation)
-  upload-artifact:
-    runs-on: ubuntu-latest
-    needs: compile
-    steps:
-      # Download the compiled PDF
-      - name: Download compiled PDF
-        uses: actions/download-artifact@v4
-        with:
-          name: compiled-pdf
-
-      # Upload PDF as job artifact with longer retention
-      - name: Upload PDF as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: SummaryZoom-PDF
-          path: main.pdf
-          compression-level: 0
-
-  # Job to upload plain PDF as artifact (runs after plain compilation)
-  upload-plain-artifact:
-    runs-on: ubuntu-latest
-    needs: compile-plain
-    steps:
-      # Download the compiled plain PDF
-      - name: Download compiled plain PDF
-        uses: actions/download-artifact@v4
-        with:
-          name: compiled-plain-pdf
-
-      # Upload plain PDF as job artifact with longer retention
+      # Upload final plain PDF as artifact
       - name: Upload plain PDF as artifact
         uses: actions/upload-artifact@v4
         with:
@@ -147,16 +108,22 @@ jobs:
   # Job to upload PDF to release (only runs on release events)
   upload-release:
     runs-on: ubuntu-latest
-    needs: compile
+    needs: [compile, compile-plain]
     if: github.event_name == 'release'
     steps:
       # Download the compiled PDF
       - name: Download compiled PDF
         uses: actions/download-artifact@v4
         with:
-          name: compiled-pdf
+          name: SummaryZoom-PDF
 
-      # Upload PDF to release assets
+      # Download the compiled plain PDF
+      - name: Download compiled plain PDF
+        uses: actions/download-artifact@v4
+        with:
+          name: SummaryZoom-Plain-PDF
+
+      # Upload main PDF to release assets
       - name: Upload PDF to release
         uses: actions/upload-release-asset@v1
         env:
@@ -165,4 +132,15 @@ jobs:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: ./main.pdf
           asset_name: SummaryZoom.pdf
+          asset_content_type: application/pdf
+
+      # Upload plain PDF to release assets
+      - name: Upload plain PDF to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./main_plain.pdf
+          asset_name: SummaryZoom-Plain.pdf
           asset_content_type: application/pdf
