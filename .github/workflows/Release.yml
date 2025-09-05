@@ -29,9 +29,9 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y inkscape
-          cd sty
-          inkscape --export-type=pdf --export-filename=logo_svg-tex.pdf logo.svg
-          ls -la logo_svg-tex.pdf
+          # Convert the SVG to the exact filename that LaTeX expects
+          inkscape --export-type=pdf --export-filename=sty/logo_svg-tex.pdf sty/logo.svg
+          ls -la sty/logo_svg-tex.pdf
 
       # Compile LaTeX document to PDF using XeLaTeX
       - name: Compile LaTeX document
@@ -44,11 +44,14 @@ jobs:
             echo '#!/bin/sh' > /usr/local/bin/inkscape
             echo 'if [ "$1" = "-V" ] || [ "$1" = "--version" ]; then' >> /usr/local/bin/inkscape
             echo '  echo "Inkscape 1.0 (4035a4f, 2020-05-01)"' >> /usr/local/bin/inkscape
+            echo 'elif echo "$@" | grep -q "export"; then' >> /usr/local/bin/inkscape
+            echo '  echo "Export successful (file already converted)"' >> /usr/local/bin/inkscape
+            echo '  exit 0' >> /usr/local/bin/inkscape
             echo 'else' >> /usr/local/bin/inkscape
-            echo '  echo "Inkscape fake - file already converted"' >> /usr/local/bin/inkscape
+            echo '  echo "Inkscape fake - command: $@"' >> /usr/local/bin/inkscape
             echo 'fi' >> /usr/local/bin/inkscape
             chmod +x /usr/local/bin/inkscape
-            inkscape -V
+            ls -la sty/logo_svg-tex.pdf || echo "PDF file not found"
 
       # Upload PDF to release assets
       - name: Upload PDF to release
