@@ -1,3 +1,5 @@
+[![Compile normal and plain PDF](https://github.com/ValentinHerrmann/Latex_SummaryZoom/actions/workflows/Release.yml/badge.svg)](https://github.com/ValentinHerrmann/Latex_SummaryZoom/actions/workflows/Release.yml)
+
 # Latex SummaryZoom
 A small Latex library working similar to power points summary zoom based on an answer by [Steven B. Segletes](https://tex.stackexchange.com/users/25858/steven-b-segletes) in [this](https://tex.stackexchange.com/questions/224267/how-to-include-a-preview-of-next-slide-in-beamers-speaker-notes) TexExchange thread.
 
