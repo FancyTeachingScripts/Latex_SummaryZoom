@@ -73,7 +73,7 @@ jobs:
         uses: xu-cheng/latex-action@v3
         with:
           root_file: main.tex
-          compiler: xelatex
+          compiler: lualatex
 
       # Upload compiled PDF for combination job
       - name: Upload compiled PDF
@@ -100,7 +100,7 @@ jobs:
         uses: xu-cheng/latex-action@v3
         with:
           root_file: main_plain.tex
-          compiler: xelatex
+          compiler: lualatex
 
       # Upload compiled plain PDF for combination job
       - name: Upload compiled plain PDF
