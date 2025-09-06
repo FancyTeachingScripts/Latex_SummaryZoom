@@ -34,7 +34,8 @@ Tested with TexLive 2024 in Overleaf.
         that is part of the summary zoom.
     }
     
-    \definesframe{Another frame title}{
+    % You can also define frames that are not part of the summary zoom
+    \definesframe[false]{Another frame title}{
         ...
     }
 }
