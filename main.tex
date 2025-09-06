@@ -9,7 +9,17 @@
 % A random Demo Frame generator - Can be deleted for production
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\demoframe}[1]{%
-     \definesframe{Demo Frame No. #1} 
+    \definesframe{Demo Frame No. #1} 
+    {
+        \centering
+        \huge Frame #1 (Section \thesection)\par
+        
+        \vspace{0.5cm} 
+        \includesvg[width=3cm]{sty/logo.svg} 
+    }
+}
+\newcommand{\demorframe}[1]{%
+    \definesframe[false]{Demo Frame No. #1} 
     {
         \centering
         \huge Frame #1 (Section \thesection)\par
@@ -43,12 +53,11 @@
 
 \begin{document}
 
-\maketitle
+ \maketitle
 
-\begin{frame}{Table of Contents}
-    \tableofcontents
-\end{frame}
-
+ \begin{frame}{Table of Contents}
+     \tableofcontents
+ \end{frame}
 
 
 \ZoomSection % \ZoomSection or \Zoom: ZoomSection creates a section with a Summary Zoom and all sframes; Zoom only creates a Summary Zoom 
@@ -63,46 +72,30 @@
         
         \onslide<2->{This appears from slide 2 onwards}
         
-        \onslide<3>{This appears only on slide 3}
-        
         \vspace{0.2cm}
         
         % Only command
         \only<4>{This text is ONLY on slide 4}
-        \only<5->{This text appears from slide 5 onwards}
         
-        % Uncover and visible
-        \uncover<6->{This text is uncovered from slide 6}
-        
-        \visible<7>{This is visible only on slide 7}
-        
-        % Invisible command
-        \invisible<8>{This text is invisible on slide 8}
         Always visible text here.
         
         \vspace{0.2cm}
         
-        % Alt command - skipped due to Beamer conflicts
-        % \alt<9>{Before slide 9: Red text}{After slide 9: Green text}
-        Alternative text handling can be done with \onslide<9->{This appears from slide 9}
         
         % Temporal command (before/on/after) 
-        \temporal<10>{Before slide 10}{Exactly on slide 10}{After slide 10}
+        \temporal<3>{{\color{green}Before slide 3}}{{\color{red}On slide 3}}{After slide 3}
         
         \vspace{0.2cm}
         
         % List with overlay items
         Key points:
         \begin{itemize}
-            \item<11-> First point appears on slide 11
-            \item<12-> Second point appears on slide 12  
-            \item<13> Third point only on slide 13
-            \item<14-> Fourth point from slide 14 onwards
+            \item<5-> First point appears on slide 5
         \end{itemize}
         
         \vspace{0.2cm}
         
-        \onslide<15->{
+        \onslide<6->{
             \includesvg[width=2cm]{sty/logo.svg}
             
             Final slide: All overlay commands demonstrated!
@@ -120,7 +113,9 @@
     % Every defined sframe appears in Summary Zoom
     \demoframe{2}
     
-    \demoframe{3}
+    \demorframe{3 (not in Zoom)}
+    
+    \demoframe{4}
 }
 
 \ZoomSection % \ZoomSection or \Zoom: ZoomSection creates a section with a Summary Zoom and all sframes; Zoom only creates a Summary Zoom 
