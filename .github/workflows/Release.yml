@@ -56,12 +56,13 @@ jobs:
         with:
           name: prepared-latex-files
 
-      # Compile LaTeX document to PDF using XeLaTeX
+      # Compile LaTeX document to PDF using LuaLaTeX
       - name: Compile LaTeX document
         uses: xu-cheng/latex-action@v3
         with:
           root_file: main.tex
           compiler: lualatex
+          args: -shell-escape
 
       # Upload compiled PDF for combination job
       - name: Upload compiled PDF
@@ -83,12 +84,13 @@ jobs:
         with:
           name: prepared-latex-files
 
-      # Compile plain LaTeX document to PDF using XeLaTeX
+      # Compile plain LaTeX document to PDF using LuaLaTeX
       - name: Compile plain LaTeX document
         uses: xu-cheng/latex-action@v3
         with:
           root_file: main_plain.tex
           compiler: lualatex
+          args: -shell-escape
 
       # Upload compiled plain PDF for combination job
       - name: Upload compiled plain PDF
