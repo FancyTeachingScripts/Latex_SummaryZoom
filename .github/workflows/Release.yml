@@ -21,29 +21,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Convert SVG to PDF and modify LaTeX to use it directly
-      - name: Convert SVG to PDF and prepare LaTeX
+      # Install fonts for LaTeX compilation
+      - name: Install fonts for LaTeX compilation
         run: |
           sudo apt update
-          sudo apt install -y inkscape
-          # Convert the SVG to PDF with a simple name
-          inkscape --export-type=pdf --export-filename=sty/logo.pdf sty/logo.svg
-          ls -la sty/logo.pdf
-          # Create a backup of main.tex and modify it to use PDF instead of SVG
-          cp main.tex main.tex.bak
-          cp main_plain.tex main_plain.tex.bak
-          # Replace all includesvg commands with includegraphics, preserving the width parameter
-          sed -i 's/\\includesvg\[\([^]]*\)\]{sty\/logo\.svg}/\\includegraphics[\1]{sty\/logo.pdf}/g' main.tex
-          sed -i 's/\\includesvg\[\([^]]*\)\]{sty\/logo\.svg}/\\includegraphics[\1]{sty\/logo.pdf}/g' main_plain.tex
-          echo "Modified main.tex and main_plain.tex to use PDF instead of SVG"
-          echo "Changes made in main.tex:"
-          grep -n "includegraphics.*logo" main.tex || echo "No includegraphics found in main.tex"
-          echo "Changes made in main_plain.tex:"
-          grep -n "includegraphics.*logo" main_plain.tex || echo "No includegraphics found in main_plain.tex"
-          echo "Remaining includesvg commands in main.tex:"
-          grep -n "includesvg" main.tex || echo "All includesvg commands replaced in main.tex"
-          echo "Remaining includesvg commands in main_plain.tex:"
-          grep -n "includesvg" main_plain.tex || echo "All includesvg commands replaced in main_plain.tex"
+          sudo apt install -y fonts-liberation ttf-mscorefonts-installer
+          # Accept the EULA for MS fonts
+          echo "ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true" | sudo debconf-set-selections
+          sudo apt install -y --reinstall ttf-mscorefonts-installer
+          # Update font cache
+          sudo fc-cache -f -v
+          echo "Fonts installed and ready for LaTeX compilation"
 
       # Upload prepared files for the compile jobs
       - name: Upload prepared files
